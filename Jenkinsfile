@@ -29,7 +29,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/Seynabou26/full_stack_app.git'
+                git branch: 'main', url: 'https://github.com/Fatoufnd/kubernetes.git'
             }
         }
 
@@ -53,22 +53,22 @@ pipeline {
         // SonarQube
         // ----------------------------
         //// Analyse le code avec SonarQube
-        stage('SonarQube Analysis') {
-            steps {
-                echo "Analyse du code avec SonarQube"
-                withSonarQubeEnv('Sonarqube_local') {
-                    withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_TOKEN')]) {
-                        sh """
-                            ${tool('Sonarqube_scanner')}/bin/sonar-scanner \
-                            -Dsonar.projectKey=sonarqube \
-                            -Dsonar.sources=. \
-                            -Dsonar.host.url=$SONAR_HOST_URL \
-                            -Dsonar.login=$SONAR_TOKEN
-                        """
-                    }
-                }
-            }
-        }
+        // stage('SonarQube Analysis') {
+        //     steps {
+        //         echo "Analyse du code avec SonarQube"
+        //         withSonarQubeEnv('Sonarqube_local') {
+        //             withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_TOKEN')]) {
+        //                 sh """
+        //                     ${tool('Sonarqube_scanner')}/bin/sonar-scanner \
+        //                     -Dsonar.projectKey=sonarqube \
+        //                     -Dsonar.sources=. \
+        //                     -Dsonar.host.url=$SONAR_HOST_URL \
+        //                     -Dsonar.login=$SONAR_TOKEN
+        //                 """
+        //             }
+        //         }
+        //     }
+        // }
 
         /*Vérifie si le code passe le Quality Gate et arrête le pipeline si échoué
         stage("Quality Gate") {
@@ -112,7 +112,7 @@ pipeline {
 
         stage('Push Docker Images') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'DOCKER_CREDENTIALS', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
                         echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
                         docker push $DOCKER_USER/$FRONT_IMAGE:latest
@@ -150,7 +150,7 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                withKubeConfig([credentialsId: 'kubeconfig-jenkins']) {
+                withKubeConfig([credentialsId: 'kubernetes']) {
                     // Déployer MongoDB
                     sh "kubectl apply -f k8s/mongo-deployment.yaml"
                     sh "kubectl apply -f k8s/mongo-service.yaml"
@@ -206,14 +206,14 @@ pipeline {
             emailext(
                 subject: "Build SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: "Pipeline réussi\nDétails : ${env.BUILD_URL}",
-                to: "seynaboubadji26@gmail.com"
+                to: "fa091999@gmail.com"
             )
         }
         failure {
             emailext(
                 subject: "Build FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: "Le pipeline a échoué\nDétails : ${env.BUILD_URL}",
-                to: "seynaboubadji26@gmail.com"
+                to: "fa091999@gmail.com"
             )
         }
     }
