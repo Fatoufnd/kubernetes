@@ -27,7 +27,7 @@ services:
       - backend-net
 
   mongo:
-    image: mongo:6.0
+    image: mongo:4.4
     container_name: mongo
     ports:
       - "27017:27017"
