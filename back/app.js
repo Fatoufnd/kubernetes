@@ -14,7 +14,7 @@ const app = express();
 
 // Configuration CORS COMPLÈTE
 app.use(cors({
-  origin: ['http://localhost:30002', 'http://192.168.49.2:30002', 'http://localhost:5173', 'http://127.0.0.1:30002'],
+  origin: ['http://localhost:30002', 'http://192.168.58.2:30002', 'http://localhost:5173', 'http://127.0.0.1:30002'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-delete-code']
@@ -28,4 +28,5 @@ app.use('/api', smartphoneRoutes);
 
 // Lancer le serveur
 const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, '0.0.0.0', () => console.log(`Serveur lancé sur http://0.0.0.0:${PORT}`));
